@@ -52,7 +52,8 @@
                         if (event.isComposing || event.keyCode === 229) { // makes mobile work
                             return;
                         }
-                        let key = event.key || String.fromCharCode(event.which);
+                        let key = String.fromCharCode(event.which);
+                        if(event.shiftKey) key = key.toUpperCase();
                         if(!key && event.which === 13) chatsocket.send("\r\n");
                         else chatsocket.send(key);
                     });
