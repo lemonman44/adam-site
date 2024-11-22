@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: adam-site
+  name: adam-site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adam-site
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: adam-site
+    spec:
+      dnsConfig: # was having dns issue in pod, this seemed to work
+        options:
+          - name: ndots
+            value: "2"
+      containers:
+          # php image container
+        - image: //php-image// # //php-image// gets filled in by deployment.yaml
+          name: php-container
+          ports:
+            - containerPort: 80
+          envFrom:
+            - secretRef:
+                name: env
+          resources: {}
+          # go image container
+        - image: //go-image// # //go-image// gets filled in by deployment.yaml
+          name: go-container
+          ports:
+            - containerPort: 80
+          envFrom:
+            - secretRef:
+                name: env
+          resources: {}

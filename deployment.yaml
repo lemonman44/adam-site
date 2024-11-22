@@ -1,0 +1,75 @@
+name: Build and Deploy adam-site
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  ECR_REPOSITORY_PHP: adam-site-php-ecr
+  ECR_REPOSITORY_GO: adam-site-go-ecr
+  EKS_CLUSTER_NAME: adam-kubernetes-cluster
+  AWS_REGION: us-east-2
+
+jobs:
+  build:
+    name: Deployment
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set short git commit SHA
+      id: commit
+      uses: prompt/actions-commit-hash@v2
+
+    - name: Check out code
+      uses: actions/checkout@v2
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{env.AWS_REGION}}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Update kube config
+      run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
+
+##### PHP IMAGE BUILD PUSH AND PREP DEPLOY SECTION
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ steps.commit.outputs.short }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_PHP:$IMAGE_TAG -f Dockerfile-php .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY_PHP:$IMAGE_TAG
+    - name: Prep Deploy files
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ steps.commit.outputs.short }}
+      run: |
+        find deployment/ -type f -exec sed -i -e "s|//php-image//|$ECR_REGISTRY/$ECR_REPOSITORY_PHP:$IMAGE_TAG|g" {} \;
+#        sed -i.bak "s|//php-image//|$ECR_REGISTRY/$ECR_REPOSITORY_PHP:$IMAGE_TAG|g" deployment/kube-deployment.yaml
+
+##### GO IMAGE BUILD PUSH AND PREP DEPLOY SECTION
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ steps.commit.outputs.short }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_GO:$IMAGE_TAG -f Dockerfile-go .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY_GO:$IMAGE_TAG
+    - name: Prep Deploy files
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ steps.commit.outputs.short }}
+      run: |
+        find deployment/ -type f -exec sed -i -e "s|//go-image//|$ECR_REGISTRY/$ECR_REPOSITORY_GO:$IMAGE_TAG|g" {} \;
+#        sed -i.bak "s|//go-image//|$ECR_REGISTRY/$ECR_REPOSITORY_GO:$IMAGE_TAG|g" deployment/kube-deployment.yaml
+
+##### DEPLOY
+    - name: Deploy
+      run: |
+        kubectl apply -f deployment/.
