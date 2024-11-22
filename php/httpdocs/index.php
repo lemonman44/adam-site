@@ -50,8 +50,8 @@
                     chat.prop("disabled", false);
                     chat.get(0).addEventListener("input", (event) => {
                         let key = event.data;
-                        if(event.inputType == "insertLineBreak") key = 13;
-                        if(event.inputType == "deleteContentBackward") key = 8;
+                        if(event.inputType == "insertLineBreak") key = "\r\n";
+                        if(event.inputType == "deleteContentBackward") key = "\b \b";
                         if(key) chatsocket.send(key);
                     });
                     // chat.get(0).addEventListener("keydown", (event) => {
