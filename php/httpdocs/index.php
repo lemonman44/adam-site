@@ -29,11 +29,11 @@
                 </p>
                 <p class="lead" style="display: grid; height: 100%;">
                     <textarea name="chat" id="chat" disabled></textarea>
-                    <label id="chatlabel" for="chat" style="font-size: 0.75rem;">Connecting to Global Chat...</label>
+                    <label id="chatlabel" for="chat" style="font-size: 0.25rem;">Connecting to GloboChat™©®ª°...</label>
                 </p>
             </main>
             <footer class="mt-auto text-white-50">
-                <p>Website by Adam Lehman, with a simple template thanks to <a href="https://getbootstrap.com/docs/5.0/examples/">Bootstrap</a>, also you can follow me <a href="https://adamclehman.bsky.social">here</a>.</p>
+                <p style="font-size: 0.5rem;">Website by Adam Lehman, with a simple template thanks to <a href="https://getbootstrap.com/docs/5.0/examples/">Bootstrap</a>, also you can follow me <a href="https://adamclehman.bsky.social">here</a>.</p>
             </footer>
         </div>
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -46,7 +46,7 @@
                     console.log("Opened Websocket Connection");
                     let label = $("#chatlabel");
                     let chat = $("#chat");
-                    label.text("Connected to Global Chat");
+                    label.text("Connected to GloboChat™©®ª°");
                     chat.prop("disabled", false);
                     chat.get(0).addEventListener("input", (event) => {
                         let key = event.data;
