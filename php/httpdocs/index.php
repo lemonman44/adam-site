@@ -48,8 +48,8 @@
                     let chat = $("#chat");
                     label.text("Connected to Global Chat");
                     chat.prop("disabled", false);
-                    chat.on("keypress", function(event) {
-                        let key = String.fromCharCode(event.which);
+                    chat.on("keydown", function(event) {
+                        let key = event.key || String.fromCharCode(event.which);
                         if(!key && event.which === 13) chatsocket.send("\r\n");
                         else chatsocket.send(key);
                     });
