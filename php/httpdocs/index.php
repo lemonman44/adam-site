@@ -48,6 +48,9 @@
                     let chat = $("#chat");
                     label.text("Connected to Global Chat");
                     chat.prop("disabled", false);
+                    chat.on("input", (event) => {
+                        alert("char: " + event.charCode + "\r\nkeyCode: " + event.keyCode + "\r\nkey: " + event.key + "\r\nshiftKey: " + event.shiftKey + "\r\nisComposing: " + event.isComposing + "\r\ndata: " + event.data + "\r\nevent: " + JSON.stringify(event));
+                    });
                     chat.get(0).addEventListener("keydown", (event) => {
                         alert("char: " + event.charCode + "\r\nkeyCode: " + event.keyCode + "\r\nkey: " + event.key + "\r\nshiftKey: " + event.shiftKey + "\r\nisComposing: " + event.isComposing + "\r\nevent: " + JSON.stringify(event));
                         if (event.isComposing || event.keyCode === 229) { // makes mobile work
