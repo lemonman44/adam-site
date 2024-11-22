@@ -25,7 +25,10 @@
             <main class="px-3">
                 <h1>Welcome to my website.</h1>
                 <p class="lead">
-                    This website is very enterprise with many skills shown, a PHP frontend (it was easier, that's why PHP) and a Golang backend, each fully Dockerized and running on Amazon Elastic Kubernetes Service with automated deployments through GitHub Actions CI/CD.
+                    This website is a simple PHP frontend and a Golang backend, each Dockerized and deployed through GitHub Actions CI/CD on to an Amazon Elastic Kubernetes Service.
+                </p>
+                <p class="lead">
+                    Below is a chat where anything you type will be shown on every other active connection to this site. (use at own risk)
                 </p>
                 <p class="lead" style="display: grid; height: 100%;">
                     <textarea name="chat" id="chat" disabled></textarea>
