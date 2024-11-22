@@ -51,19 +51,9 @@
                     chat.get(0).addEventListener("input", (event) => {
                         let key = event.data;
                         if(event.inputType == "insertLineBreak") key = "\r\n";
-                        if(event.inputType == "deleteContentBackward") key = "\b \b";
+                        // if(event.inputType == "deleteContentBackward") key = "\b \b"; // doesnt work but im sure theres a correct backspace character to use in this situation
                         if(key) chatsocket.send(key);
                     });
-                    // chat.get(0).addEventListener("keydown", (event) => {
-                    //     alert("char: " + event.charCode + "\r\nkeyCode: " + event.keyCode + "\r\nkey: " + event.key + "\r\nshiftKey: " + event.shiftKey + "\r\nisComposing: " + event.isComposing + "\r\nevent: " + JSON.stringify(event));
-                    //     if (event.isComposing || event.keyCode === 229) { // makes mobile work
-                    //         return;
-                    //     }
-                    //     let key = String.fromCharCode(event.keyCode);
-                    //     if(event.shiftKey) key = key.toUpperCase();
-                    //     if(!key && event.which === 13) chatsocket.send("\r\n");
-                    //     else chatsocket.send(key);
-                    // });
                     chatsocket.onmessage = (event) => {
                         console.log("data received", event);
                         chat.val(chat.val() + event.data);
