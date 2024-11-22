@@ -70,6 +70,10 @@ jobs:
 #        sed -i.bak "s|//go-image//|$ECR_REGISTRY/$ECR_REPOSITORY_GO:$IMAGE_TAG|g" deployment/kube-deployment.yaml
 
 ##### DEPLOY
+    - name: version
+      run: |
+        kubectl version
+##### DEPLOY
     - name: Deploy
       run: |
         kubectl apply -f deployment/.
