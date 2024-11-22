@@ -49,20 +49,21 @@
                     label.text("Connected to Global Chat");
                     chat.prop("disabled", false);
                     chat.get(0).addEventListener("input", (event) => {
-                        alert("char: " + event.charCode + "\r\nkeyCode: " + event.keyCode + "\r\nkey: " + event.key + "\r\nwhich: " + event.which + "\r\nshiftKey: " + event.shiftKey + "\r\nisComposing: " + event.isComposing + "\r\ndata: " + event.data + "\r\nevent: " + JSON.stringify(event));
                         let key = event.data;
+                        if(event.inputType == "insertLineBreak") $key = 13;
+                        if(event.inputType == "deleteContentBackward") $key = 8;
                         if(key) chatsocket.send(key);
                     });
-                    chat.get(0).addEventListener("keydown", (event) => {
-                        alert("char: " + event.charCode + "\r\nkeyCode: " + event.keyCode + "\r\nkey: " + event.key + "\r\nshiftKey: " + event.shiftKey + "\r\nisComposing: " + event.isComposing + "\r\nevent: " + JSON.stringify(event));
-                        if (event.isComposing || event.keyCode === 229) { // makes mobile work
-                            return;
-                        }
-                        let key = String.fromCharCode(event.keyCode);
-                        if(event.shiftKey) key = key.toUpperCase();
-                        if(!key && event.which === 13) chatsocket.send("\r\n");
-                        else chatsocket.send(key);
-                    });
+                    // chat.get(0).addEventListener("keydown", (event) => {
+                    //     alert("char: " + event.charCode + "\r\nkeyCode: " + event.keyCode + "\r\nkey: " + event.key + "\r\nshiftKey: " + event.shiftKey + "\r\nisComposing: " + event.isComposing + "\r\nevent: " + JSON.stringify(event));
+                    //     if (event.isComposing || event.keyCode === 229) { // makes mobile work
+                    //         return;
+                    //     }
+                    //     let key = String.fromCharCode(event.keyCode);
+                    //     if(event.shiftKey) key = key.toUpperCase();
+                    //     if(!key && event.which === 13) chatsocket.send("\r\n");
+                    //     else chatsocket.send(key);
+                    // });
                     chatsocket.onmessage = (event) => {
                         console.log("data received", event);
                         chat.val(chat.val() + event.data);
