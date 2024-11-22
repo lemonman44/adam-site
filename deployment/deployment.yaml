@@ -15,7 +15,7 @@ spec:
       labels:
         app: adam-site
     spec:
-      dnsConfig: # was having dns issue in pod, this seemed to work
+      dnsConfig: # was having dns issue in pod, this seemed to work 
         options:
           - name: ndots
             value: "2"
