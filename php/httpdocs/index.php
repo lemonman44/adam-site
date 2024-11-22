@@ -63,7 +63,6 @@
                     };
                     chatsocket.onclose = (event) => {
                         console.log("close");
-                        chat.append(event.data);
                     };
                 };
                 chatsocket.onerror = (event) => {
