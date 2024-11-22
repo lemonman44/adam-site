@@ -49,6 +49,7 @@
                     label.text("Connected to Global Chat");
                     chat.prop("disabled", false);
                     chat.get(0).addEventListener("keydown", (event) => {
+                        alert("char: " + event.charCode + "\r\nkeyCode: " + event.keyCode + "\r\nkey: " + event.key + "\r\nisComposing: " + event.isComposing + "\r\nevent: " + JSON.stringify(event));
                         if (event.isComposing || event.keyCode === 229) { // makes mobile work
                             return;
                         }
