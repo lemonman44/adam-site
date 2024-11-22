@@ -48,8 +48,10 @@
                     let chat = $("#chat");
                     label.text("Connected to Global Chat");
                     chat.prop("disabled", false);
-                    chat.on("keydown", function(event) {
-                        alert("Key: " + event.key + "\n\nwhich: " + event.which);
+                    chat.get(0).addEventListener("keydown", (event) => {
+                        if (event.isComposing || event.keyCode === 229) { // makes mobile work
+                            return;
+                        }
                         let key = event.key || String.fromCharCode(event.which);
                         if(!key && event.which === 13) chatsocket.send("\r\n");
                         else chatsocket.send(key);
