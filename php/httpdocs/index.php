@@ -49,7 +49,7 @@
                     label.text("Connected to Global Chat");
                     chat.prop("disabled", false);
                     chat.on("keydown", function(event) {
-                        alert(JSON.stringify(event));
+                        alert("Key: " + event.key + "\n\nwhich: " + event.which);
                         let key = event.key || String.fromCharCode(event.which);
                         if(!key && event.which === 13) chatsocket.send("\r\n");
                         else chatsocket.send(key);
