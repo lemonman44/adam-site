@@ -43,12 +43,18 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script type="text/javascript">
             $(document).ready(function() {
+                initChat();
+            });
+
+            function initChat() {
+                let label = $("#chatlabel");
+                let chat = $("#chat");
+                label.text("Connecting to GloboChat™©®ª°...");
+                chat.prop("disabled", true);
                 console.log("Attempting Websocket Connection");
                 const chatsocket = new WebSocket("<?php echo "$_ENV[GO_SITE_HTTP_HOST]/api/go/sockets/chat"; ?>");
                 chatsocket.onopen = (event) => {
                     console.log("Opened Websocket Connection");
-                    let label = $("#chatlabel");
-                    let chat = $("#chat");
                     label.text("Connected to GloboChat™©®ª°");
                     chat.prop("disabled", false);
                     chat.get(0).addEventListener("input", (event) => {
@@ -62,13 +68,14 @@
                         chat.val(chat.val() + event.data);
                     };
                     chatsocket.onclose = (event) => {
-                        console.log("close");
+                        console.log("Connection Closed, will attempt to reconnect");
+                        initChat();
                     };
                 };
                 chatsocket.onerror = (event) => {
                     console.log("error", event);
                 }
-            });
+            }
         </script>
     </body>
 </html>
