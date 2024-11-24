@@ -16,8 +16,8 @@
                 <div>
                     <h3 class="float-md-start mb-0">Adam's Website</h3>
                     <nav class="nav nav-masthead justify-content-center float-md-end">
-                        <a class="nav-link active" aria-current="page" href="https://github.com/lemonman44/adam-site">Repository</a>
-                        <a class="nav-link" href="#">Download Resume</a>
+                        <a class="nav-link" href="https://github.com/lemonman44/adam-site">Repository</a>
+                        <a class="nav-link" href="resume/Resume.pdf">Download Resume</a>
                         <a class="nav-link" href="mailto:adamlehman2018@gmail.com">Email Me</a>
                     </nav>
                 </div>
