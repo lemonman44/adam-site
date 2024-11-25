@@ -22,7 +22,7 @@
                     </nav>
                 </div>
             </header>
-            <main class="px-3">
+            <main class="px-3" style="margin-top: 100px;">
                 <h1>Welcome to my website.</h1>
                 <p class="lead">
                     This website is a simple PHP frontend and a Golang backend, each Dockerized and deployed through GitHub Actions CI/CD on to an Amazon Elastic Kubernetes Service.
