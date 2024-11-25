@@ -15,37 +15,6 @@ func main() {
 	initChatSocketServer()
 }
 
-type ChatRoom struct {
-	conns   map[*ChatConnection]bool
-	addconn chan *ChatConnection
-	delconn chan *ChatConnection
-}
-
-func (c *ChatRoom) run() {
-	fmt.Println("Chat Room Begin")
-	for {
-		select {
-		case conn := <-c.addconn:
-			c.conns[conn] = true
-		case conn := <-c.delconn:
-			if _, ok := c.conns[conn]; ok {
-				delete(c.conns, conn)
-				close(conn.send)
-			}
-		}
-	}
-}
-
-// wrapper for attaching a channel to a connection
-type ChatConnection struct {
-	// chat room this connection belongs to
-	room *ChatRoom
-	// underlying websocket connection
-	conn *websocket.Conn
-	// channel access into the underlying websocket connection
-	send chan []byte
-}
-
 func initChatSocketServer() {
 	// make and run the global chat room
 	room := &ChatRoom{
@@ -155,9 +124,46 @@ func chatSocketWriteLoop(c *ChatConnection) {
 				c.conn.WriteMessage(websocket.TextMessage, <-c.send)
 			}
 		} else {
-			// The hub closed the channel.
+			// The room closed the channel.
 			c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 			return
 		}
 	}
+}
+
+// represents a pool of connections
+type ChatRoom struct {
+	// map of the connections (mem address as keys)
+	conns map[*ChatConnection]bool
+	// channel to add connections
+	addconn chan *ChatConnection
+	// channel to remove connections
+	delconn chan *ChatConnection
+}
+
+// gives ChatRoom structs a run function to be run asynchronously
+func (c *ChatRoom) run() {
+	fmt.Println("Chat Room Begin")
+	// wait for connections to be added or removed from the room
+	for {
+		select {
+		case conn := <-c.addconn: // if a connection is joining the room, add connection to map
+			c.conns[conn] = true
+		case conn := <-c.delconn: // if a connection is leaving the room, remove connection from map, and clean up resources
+			if _, ok := c.conns[conn]; ok {
+				delete(c.conns, conn)
+				close(conn.send)
+			}
+		}
+	}
+}
+
+// wrapper for attaching a channel to a connection
+type ChatConnection struct {
+	// chat room this connection belongs to
+	room *ChatRoom
+	// underlying websocket connection
+	conn *websocket.Conn
+	// channel access into the underlying websocket connection
+	send chan []byte
 }

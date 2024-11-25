@@ -28,7 +28,7 @@
                     This website is a simple PHP frontend and a Golang backend, each Dockerized and deployed through GitHub Actions CI/CD on to an Amazon Elastic Kubernetes Service.
                 </p>
                 <p class="lead">
-                    Below is a small, (hopefully) fun chat box where anything you type will be shown on every other active connection to this site.
+                    Below is a small, (hopefully) fun chat box where anything you type will be displayed to every other active connection to this site.
                 </p>
                 <p class="lead" style="display: grid; height: 300px;">
                     <textarea name="chat" id="chat" disabled></textarea>
@@ -36,7 +36,8 @@
                 </p>
             </main>
             <footer class="mt-auto text-white-50">
-                <p style="font-size: 0.5rem;">Website by Adam Lehman, with a simple template thanks to <a href="https://getbootstrap.com/docs/5.0/examples/">Bootstrap</a>, also you can follow me <a href="https://adamclehman.bsky.social">here</a>.</p>
+                <!-- <p style="font-size: 0.5rem;">Website by Adam Lehman, with a simple template thanks to <a href="https://getbootstrap.com/docs/5.0/examples/">Bootstrap</a>, also you can follow me <a href="https://adamclehman.bsky.social">here</a>.</p> -->
+                <p style="font-size: 0.5rem;">Website by Adam Lehman, with a simple template thanks to <a href="https://getbootstrap.com/docs/5.0/examples/">Bootstrap</a>.</p>
             </footer>
         </div>
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
