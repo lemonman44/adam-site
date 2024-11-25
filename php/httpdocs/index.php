@@ -30,7 +30,7 @@
                 <p class="lead">
                     Below is a small, (hopefully) fun chat box where anything you type will be shown on every other active connection to this site.
                 </p>
-                <p class="lead" style="display: grid; height: 100%;">
+                <p class="lead" style="display: grid; height: 300px;">
                     <textarea name="chat" id="chat" disabled></textarea>
                     <label id="chatlabel" for="chat" style="font-size: 0.25rem;">Connecting to GloboChat™©®ª°...</label>
                 </p>
