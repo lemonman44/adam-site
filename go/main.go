@@ -143,11 +143,13 @@ func (c *ChatRoom) run() {
 		select {
 		case conn := <-c.addconn: // if a connection is joining the room, add connection to map
 			c.conns[conn] = true
+			c.broadcast <- ChatMessage{nil, len(c.conns), nil}
 		case conn := <-c.delconn: // if a connection is leaving the room, remove connection from map, and clean up resources
 			if _, ok := c.conns[conn]; ok {
 				delete(c.conns, conn)
 				close(conn.send)
 			}
+			c.broadcast <- ChatMessage{nil, len(c.conns), nil}
 		case msg := <-c.broadcast: // if a message is being sent into the room, send to other connections
 			json, err := msg.toJSON()
 			if err != nil {
@@ -187,5 +189,5 @@ type ChatMessage struct {
 }
 
 func (c ChatMessage) toJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{"message": c.message, "numconns": c.numconns})
+	return json.Marshal(map[string]any{"message": string(c.message), "numconns": c.numconns})
 }
