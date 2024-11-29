@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -18,9 +19,10 @@ func main() {
 func initChatSocketServer() {
 	// make and run the global chat room
 	room := &ChatRoom{
-		conns:   make(map[*ChatConnection]bool),
-		addconn: make(chan *ChatConnection),
-		delconn: make(chan *ChatConnection),
+		conns:     make(map[*ChatConnection]bool),
+		addconn:   make(chan *ChatConnection),
+		delconn:   make(chan *ChatConnection),
+		broadcast: make(chan ChatMessage),
 	}
 	go room.run()
 	// define paths
@@ -38,8 +40,8 @@ func chatSocketHandler(c *ChatRoom, w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Chat Connection Begin")
 	// set some initial websocket settings
 	upgrader := websocket.Upgrader{
-		ReadBufferSize:  0,
-		WriteBufferSize: 0,
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
 	}
 	// if local then dont check origin
 	if os.Getenv("APP_ENV") != "production" {
@@ -85,23 +87,13 @@ func chatSocketReadLoop(c *ChatConnection) {
 		default:
 			msgType, msg, err := c.conn.ReadMessage()
 			// if message resulted in error or closing etc then close on this side and exit
-			if err != nil || msgType != websocket.TextMessage {
+			if err != nil {
 				fmt.Println("Error: ", err, "M Type: ", msgType)
 				return
 			}
 			// send message to conns in chat room
 			fmt.Println("Msg received from client", msg)
-			for conn := range c.room.conns {
-				if conn == c {
-					continue
-				}
-				select {
-				case conn.send <- msg:
-				default:
-					close(conn.send)
-					delete(c.room.conns, conn)
-				}
-			}
+			c.room.broadcast <- ChatMessage{msg, len(c.room.conns), c}
 		}
 	}
 }
@@ -139,6 +131,8 @@ type ChatRoom struct {
 	addconn chan *ChatConnection
 	// channel to remove connections
 	delconn chan *ChatConnection
+	// channel for connections to send messages through
+	broadcast chan ChatMessage
 }
 
 // gives ChatRoom structs a run function to be run asynchronously
@@ -154,6 +148,24 @@ func (c *ChatRoom) run() {
 				delete(c.conns, conn)
 				close(conn.send)
 			}
+		case msg := <-c.broadcast: // if a message is being sent into the room, send to other connections
+			json, err := msg.toJSON()
+			if err != nil {
+				fmt.Println("Could not convert to JSON: ", msg)
+				continue
+			}
+			for conn := range c.conns {
+				if conn == msg.fromconn {
+					continue
+				}
+				select {
+				case conn.send <- json:
+				default:
+					close(conn.send)
+					delete(c.conns, conn)
+				}
+			}
+
 		}
 	}
 }
@@ -166,4 +178,14 @@ type ChatConnection struct {
 	conn *websocket.Conn
 	// channel access into the underlying websocket connection
 	send chan []byte
+}
+
+type ChatMessage struct {
+	message  []byte
+	numconns int
+	fromconn *ChatConnection
+}
+
+func (c ChatMessage) toJSON() ([]byte, error) {
+	return json.Marshal(map[string]any{"message": c.message, "numconns": c.numconns})
 }

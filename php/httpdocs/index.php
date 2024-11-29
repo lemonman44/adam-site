@@ -31,6 +31,7 @@
                     Below is a small, (hopefully) fun chat box where anything you type will be displayed to every other active connection to this site.
                 </p>
                 <p class="lead" style="display: grid; height: 300px;">
+                    <span>Active Connections: <span id="numconns">1</span></span>
                     <textarea name="chat" id="chat" disabled></textarea>
                     <label id="chatlabel" for="chat" style="font-size: 0.25rem;">Connecting to GloboChat™©®ª°...</label>
                 </p>
@@ -49,6 +50,7 @@
 
             function initChat() {
                 let label = $("#chatlabel");
+                let conns = $("#numconns");
                 let chat = $("#chat");
                 label.text("Connecting to GloboChat™©®ª°...");
                 chat.prop("disabled", true);
@@ -66,7 +68,9 @@
                     });
                     chatsocket.onmessage = (event) => {
                         console.log("data received", event);
-                        chat.val(chat.val() + event.data);
+                        json = JSON.parse(event.data);
+                        conns.text(json.numconns);
+                        chat.val(chat.val() + json.message);
                     };
                     chatsocket.onclose = (event) => {
                         console.log("Connection Closed, will attempt to reconnect");
