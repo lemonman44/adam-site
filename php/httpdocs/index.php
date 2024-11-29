@@ -31,7 +31,7 @@
                     Below is a small, (hopefully) fun chat box where anything you type will be displayed to every other active connection to this site.
                 </p>
                 <p class="lead" style="display: grid; height: 300px;">
-                    <span style="align-self: end;text-align: right;">Active Connections: <span id="numconns">1</span></span>
+                    <span style="font-size: 1rem;align-self: end;text-align: right;">Active Connections: <span id="numconns">1</span></span>
                     <textarea name="chat" id="chat" disabled></textarea>
                     <label id="chatlabel" for="chat" style="font-size: 0.25rem;">Connecting to GloboChat™©®ª°...</label>
                 </p>
