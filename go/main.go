@@ -64,6 +64,8 @@ func chatSocketHandler(c *ChatRoom, w http.ResponseWriter, r *http.Request) {
 	// begin read and write loops
 	go chatSocketReadLoop(chatconn)
 	go chatSocketWriteLoop(chatconn)
+	// send a num conn update
+	c.broadcast <- ChatMessage{nil, len(c.conns), nil}
 }
 
 // loop to read messages from websocket connections to chat room
@@ -143,13 +145,11 @@ func (c *ChatRoom) run() {
 		select {
 		case conn := <-c.addconn: // if a connection is joining the room, add connection to map
 			c.conns[conn] = true
-			c.broadcast <- ChatMessage{nil, len(c.conns), nil}
 		case conn := <-c.delconn: // if a connection is leaving the room, remove connection from map, and clean up resources
 			if _, ok := c.conns[conn]; ok {
 				delete(c.conns, conn)
 				close(conn.send)
 			}
-			c.broadcast <- ChatMessage{nil, len(c.conns), nil}
 		case msg := <-c.broadcast: // if a message is being sent into the room, send to other connections
 			json, err := msg.toJSON()
 			if err != nil {
