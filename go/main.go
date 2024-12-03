@@ -88,6 +88,7 @@ func chatSocketReadLoop(c *ChatConnection) {
 			msgType, msg, err := c.conn.ReadMessage()
 			// if message resulted in error or closing etc then close on this side and exit
 			if err != nil {
+				err.Error()
 				fmt.Println("Error: ", err, "M Type: ", msgType)
 				return
 			}
@@ -172,9 +173,9 @@ func (c *ChatRoom) run() {
 				}
 				select {
 				case conn.send <- json:
-				default:
-					close(conn.send)
-					delete(c.conns, conn)
+					// default:
+					// 	close(conn.send)
+					// 	delete(c.conns, conn)
 				}
 			}
 		}
