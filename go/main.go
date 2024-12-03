@@ -142,16 +142,24 @@ type ChatRoom struct {
 func (c *ChatRoom) run() {
 	fmt.Println("Chat Room Begin")
 	// wait for connections to be added or removed from the room
-	for {
-		select {
-		case conn := <-c.addconn: // if a connection is joining the room, add connection to map
+	go func() {
+		for {
+			conn := <-c.addconn // if a connection is joining the room, add connection to map
 			c.conns[conn] = true
-		case conn := <-c.delconn: // if a connection is leaving the room, remove connection from map, and clean up resources
+		}
+	}()
+	go func() {
+		for {
+			conn := <-c.delconn // if a connection is leaving the room, remove connection from map, and clean up resources
 			if _, ok := c.conns[conn]; ok {
 				delete(c.conns, conn)
 				close(conn.send)
 			}
-		case msg := <-c.broadcast: // if a message is being sent into the room, send to other connections
+		}
+	}()
+	go func() {
+		for {
+			msg := <-c.broadcast // if a message is being sent into the room, send to other connections
 			json, err := msg.toJSON()
 			if err != nil {
 				fmt.Println("Could not convert to JSON: ", msg)
@@ -168,9 +176,37 @@ func (c *ChatRoom) run() {
 					delete(c.conns, conn)
 				}
 			}
-
 		}
-	}
+	}()
+	// for {
+	// 	select {
+	// 	case conn := <-c.addconn: // if a connection is joining the room, add connection to map
+	// 		c.conns[conn] = true
+	// 	case conn := <-c.delconn: // if a connection is leaving the room, remove connection from map, and clean up resources
+	// 		if _, ok := c.conns[conn]; ok {
+	// 			delete(c.conns, conn)
+	// 			close(conn.send)
+	// 		}
+	// 	case msg := <-c.broadcast: // if a message is being sent into the room, send to other connections
+	// 		json, err := msg.toJSON()
+	// 		if err != nil {
+	// 			fmt.Println("Could not convert to JSON: ", msg)
+	// 			continue
+	// 		}
+	// 		for conn := range c.conns {
+	// 			if conn == msg.fromconn {
+	// 				continue
+	// 			}
+	// 			select {
+	// 			case conn.send <- json:
+	// 			default:
+	// 				close(conn.send)
+	// 				delete(c.conns, conn)
+	// 			}
+	// 		}
+
+	// 	}
+	// }
 }
 
 // wrapper for attaching a channel to a connection
