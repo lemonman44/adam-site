@@ -64,9 +64,6 @@ func chatSocketHandler(c *ChatRoom, w http.ResponseWriter, r *http.Request) {
 	// begin read and write loops
 	go chatSocketReadLoop(chatconn)
 	go chatSocketWriteLoop(chatconn)
-	// send a num conn update
-	numconn := len(c.conns) + len(c.addconn)
-	c.broadcast <- ChatMessage{nil, numconn, nil}
 }
 
 // loop to read messages from websocket connections to chat room
@@ -146,6 +143,8 @@ func (c *ChatRoom) run() {
 		for {
 			conn := <-c.addconn // if a connection is joining the room, add connection to map
 			c.conns[conn] = true
+			// send a num conn update
+			c.broadcast <- ChatMessage{nil, len(c.conns), nil}
 		}
 	}()
 	go func() {
@@ -155,6 +154,8 @@ func (c *ChatRoom) run() {
 				delete(c.conns, conn)
 				close(conn.send)
 			}
+			// send a num conn update
+			c.broadcast <- ChatMessage{nil, len(c.conns), nil}
 		}
 	}()
 	go func() {
