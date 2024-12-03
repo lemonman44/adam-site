@@ -65,7 +65,8 @@ func chatSocketHandler(c *ChatRoom, w http.ResponseWriter, r *http.Request) {
 	go chatSocketReadLoop(chatconn)
 	go chatSocketWriteLoop(chatconn)
 	// send a num conn update
-	c.broadcast <- ChatMessage{nil, len(c.conns), nil}
+	numconn := len(c.conns) + len(c.addconn)
+	c.broadcast <- ChatMessage{nil, numconn, nil}
 }
 
 // loop to read messages from websocket connections to chat room
