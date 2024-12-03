@@ -20,7 +20,6 @@ metadata:
   annotations:
     cert-manager.io/issuer: "cert-issuer"
     nginx.org/websocket-services: "cluster-ip-service"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
 spec:

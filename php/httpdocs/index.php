@@ -71,6 +71,7 @@
                         json = JSON.parse(event.data);
                         conns.text(json.numconns);
                         chat.val(chat.val() + json.message);
+                        chat.scrollTop(chat[0].scrollHeight)
                     };
                     chatsocket.onclose = (event) => {
                         console.log("Connection Closed, will attempt to reconnect");
