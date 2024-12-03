@@ -88,7 +88,6 @@ func chatSocketReadLoop(c *ChatConnection) {
 			msgType, msg, err := c.conn.ReadMessage()
 			// if message resulted in error or closing etc then close on this side and exit
 			if err != nil {
-				err.Error()
 				fmt.Println("Error: ", err, "M Type: ", msgType)
 				return
 			}
@@ -103,6 +102,7 @@ func chatSocketReadLoop(c *ChatConnection) {
 func chatSocketWriteLoop(c *ChatConnection) {
 	// define close process for when this function exits
 	defer func() {
+		c.room.delconn <- c
 		c.conn.Close()
 	}()
 	for {
@@ -117,7 +117,7 @@ func chatSocketWriteLoop(c *ChatConnection) {
 				c.conn.WriteMessage(websocket.TextMessage, <-c.send)
 			}
 		} else {
-			// The room closed the channel.
+			// The room closed the send channel.
 			c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 			return
 		}
@@ -171,44 +171,10 @@ func (c *ChatRoom) run() {
 				if conn == msg.fromconn {
 					continue
 				}
-				select {
-				case conn.send <- json:
-					// default:
-					// 	close(conn.send)
-					// 	delete(c.conns, conn)
-				}
+				conn.send <- json
 			}
 		}
 	}()
-	// for {
-	// 	select {
-	// 	case conn := <-c.addconn: // if a connection is joining the room, add connection to map
-	// 		c.conns[conn] = true
-	// 	case conn := <-c.delconn: // if a connection is leaving the room, remove connection from map, and clean up resources
-	// 		if _, ok := c.conns[conn]; ok {
-	// 			delete(c.conns, conn)
-	// 			close(conn.send)
-	// 		}
-	// 	case msg := <-c.broadcast: // if a message is being sent into the room, send to other connections
-	// 		json, err := msg.toJSON()
-	// 		if err != nil {
-	// 			fmt.Println("Could not convert to JSON: ", msg)
-	// 			continue
-	// 		}
-	// 		for conn := range c.conns {
-	// 			if conn == msg.fromconn {
-	// 				continue
-	// 			}
-	// 			select {
-	// 			case conn.send <- json:
-	// 			default:
-	// 				close(conn.send)
-	// 				delete(c.conns, conn)
-	// 			}
-	// 		}
-
-	// 	}
-	// }
 }
 
 // wrapper for attaching a channel to a connection
